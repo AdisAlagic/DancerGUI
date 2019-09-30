@@ -1,14 +1,44 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QDir>
+#include <QMessageBox>
+#include <fstream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    tryAgain:
+    QMessageBox box("Dancer not found", "Dancer wasn't found, would you like to select exe file?", QMessageBox::Warning, QMessageBox::Yes, QMessageBox::Retry, QMessageBox::No);
+    int reply = box.exec();
+    switch(reply){
+    case QMessageBox::Yes:
+        //Open folder selector
+        break;
+    case QMessageBox::No:
+        exPr = true;
+        QApplication::closeAllWindows();
+        break;
+    case QMessageBox::Retry:
+        if(!scanFolder()){
+            goto tryAgain;
+        }
+    }
 }
-
+bool MainWindow::scanFolder(){
+    QDir dir;
+    QRegExp exp("dancer.*.exe");
+    exp.setPatternSyntax(QRegExp::Wildcard);
+    QStringList strList = dir.entryList();
+    foreach (QString fileName, strList) {
+        if(exp.exactMatch(fileName)){
+            appName = fileName.toStdString();
+            return true;
+        }
+    }
+    return false;
+}
 String MainWindow::buildCommand(){
     String res;
     res = appName + " -title=" + "\"" + songName + "\" " + "-difficulty=" + "\"" + difficuty + "\" ";
@@ -40,6 +70,10 @@ String MainWindow::buildCommand(){
     return res;
 }
 
+bool MainWindow::getExit(){
+    return exPr;
+}
+
 void MainWindow::onAnyClick(){
     this->difficuty = ui->cSongDifficulty->currentText().toStdString();
     this->songName = ui->SongSelection->currentText().toStdString();
@@ -69,6 +103,9 @@ MainWindow::~MainWindow()
 void MainWindow::on_pushButton_clicked()
 {
     onAnyClick();
+    if (!appName.empty()){
+        system(buildCommand().c_str());
+    }
 }
 
 void MainWindow::on_SongSelection_currentTextChanged(const QString &arg1)

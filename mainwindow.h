@@ -14,6 +14,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
+    bool getExit();
     ~MainWindow();
 
 private slots:
@@ -53,10 +54,12 @@ private:
     double pitch;
     int sittings;
 
+    bool exPr;
     bool fps;
     bool debug;
 
     void onAnyClick();
     String buildCommand();
+    bool scanFolder();
 };
 #endif // MAINWINDOW_H
