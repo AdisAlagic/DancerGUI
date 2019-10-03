@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include <string>
+#include <map>
+#include <qdir.h>
 typedef  std::string String;
 #include <QMainWindow>
 
@@ -14,7 +16,10 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    bool getExit();
+    static QDir path;
+    static bool exPr;
+    static bool getExit();
+    static QDir getDir();
     ~MainWindow();
 
 private slots:
@@ -54,11 +59,12 @@ private:
     double pitch;
     int sittings;
 
-    bool exPr;
     bool fps;
     bool debug;
 
+    void setSongs();
     void onAnyClick();
+    QString openFile();
     String buildCommand();
     bool scanFolder();
 };

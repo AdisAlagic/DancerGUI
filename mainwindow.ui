@@ -119,6 +119,9 @@
       <height>25</height>
      </rect>
     </property>
+    <property name="maximum">
+     <number>2000</number>
+    </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
@@ -141,6 +144,9 @@
       <width>71</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="maximum">
+     <number>2000</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
@@ -165,6 +171,9 @@
       <height>25</height>
      </rect>
     </property>
+    <property name="maximum">
+     <double>2000.000000000000000</double>
+    </property>
    </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
@@ -187,6 +196,9 @@
       <width>71</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="maximum">
+     <double>2000.000000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_6">
@@ -258,6 +270,9 @@
       <width>71</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="maximum">
+     <number>2000</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_8">
