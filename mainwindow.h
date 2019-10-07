@@ -1,5 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+#include "sqlitemanager.h"
+
 #include <string>
 #include <map>
 #include <qdir.h>
@@ -16,18 +18,13 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    static QDir path;
-    static bool exPr;
-    static bool getExit();
-    static QDir getDir();
+    bool getExit();
+    QDir getDir();
+    void setDir(QDir dir);
+    void setExit(bool boolean);
     ~MainWindow();
 
 private slots:
-    void on_pushButton_clicked();
-
-    void on_SongSelection_currentTextChanged(const QString &arg1);
-
-    void on_cSongDifficulty_currentTextChanged(const QString &arg1);
 
     void on_cursor_valueChanged(const QString &arg1);
 
@@ -45,12 +42,19 @@ private slots:
 
     void on_speed_valueChanged(const QString &arg1);
 
+    void on_update_clicked();
+
+    void on_start_clicked();
+
+    void on_SongSelection_activated(const QString &arg1);
+    void on_cSongDifficulty_activated(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     String command;
     String appName;
     String songName;
-    String difficuty;
+    String difficulty;
     String mover;
 
     int cursors;
@@ -58,10 +62,14 @@ private:
     double speed;
     double pitch;
     int sittings;
+    QDir path;
 
+    bool exPr;
     bool fps;
     bool debug;
 
+    QProcess pr;
+    SQLiteManager sql;
     void setSongs();
     void onAnyClick();
     QString openFile();

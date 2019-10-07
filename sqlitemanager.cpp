@@ -3,22 +3,46 @@
 #include <map>
 SQLiteManager::SQLiteManager()
 {
+    sdb = QSqlDatabase::addDatabase("QSQLITE");
 }
 
-void SQLiteManager::getData(){
-        QSqlDatabase sdb = QSqlDatabase::addDatabase("QSQLITE");
-       // sdb.setDatabaseName(MainWindow::path.path() + "\\dancer.db");
-        bool ok = sdb.open();
-        if (ok){
-            QSqlQuery query("SELECT beatmaps.title, beatmaps.version FROM beatmaps");
-            bool queryOk = query.exec();
-            if (queryOk){
-                while(query.next()){
-                    QVariant one = query.value(1);
-                    QVariant two = query.value(2);
-                    songs.insert(std::make_pair(one, two));
-                }
-            }
-        }
+std::vector<QString> SQLiteManager::getSongs(QString path){
+    QString fullpath = path + "/danser.db";
+    sdb.setDatabaseName(fullpath);
+    sdb.open();
+    std::vector<QString> res;
+    QSqlQuery query(sdb);
 
+    bool queryOk = query.exec("SELECT beatmaps.title FROM beatmaps");
+    qDebug() << query.lastError();
+    if(queryOk){
+       QString lastSong = "";
+       while(query.next()) {
+           QString song = query.value(0).toString();
+           if (lastSong != song){
+               //qDebug() << song;
+               res.push_back(song);
+               lastSong = song;
+           }
+       }
+       sdb.close();
+    }
+    std::sort(res.begin(), res.end());
+    return res;
+}
+
+std::vector<QString> SQLiteManager::getDifficulty(QString song)
+{
+    sdb.open();
+    std::vector<QString> res;
+    QSqlQuery query(sdb);
+    bool queryOk = query.exec("SELECT beatmaps.version FROM beatmaps WHERE beatmaps.title=\"" + song + "\"");
+    qDebug() << query.lastError();
+    qDebug() << query.executedQuery();
+    if (queryOk){
+        while(query.next()){
+            res.push_back(query.value(0).toString());
+        }
+    }
+    return res;
 }

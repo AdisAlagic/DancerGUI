@@ -6,10 +6,11 @@ typedef std::string String;
 class SQLiteManager
 {
 public:
-    static std::multimap<QVariant, QVariant> songs;
-    static void getData();
-private:
+    std::vector<QString> getSongs(QString path);
+    std::vector<QString> getDifficulty(QString song);
     SQLiteManager();
+private:
+    QSqlDatabase sdb;
 };
 
 
