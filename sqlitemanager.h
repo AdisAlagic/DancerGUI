@@ -9,6 +9,7 @@ public:
     std::vector<QString> getSongs(QString path);
     std::vector<QString> getDifficulty(QString song);
     SQLiteManager();
+    ~SQLiteManager();
 private:
     QSqlDatabase sdb;
 };

@@ -162,7 +162,6 @@ compile_commands.json
 
 # Qt Creator settings
 *.creator
-*.pro
 
 # User project settings
 *.creator.user*

@@ -161,7 +161,7 @@ QStringList MainWindow::getArgs(){
     if (debug){
         args.push_front(" -debug");
     }
-
+    return args;
 }
 
 bool MainWindow::getExit(){
