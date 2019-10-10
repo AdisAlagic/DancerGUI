@@ -307,7 +307,10 @@ void MainWindow::on_cSongDifficulty_activated(const QString &arg1)
     onAnyClick();
 }
 
-
+/**
+ * @brief MainWindow::copySittings
+ * Bug fix. It will be removed, when Dancer Kotlin will be released.
+ */
 void MainWindow::copySittings(){
     foreach(QString file, getDir().entryList()){
         qDebug() << getDir().path();
