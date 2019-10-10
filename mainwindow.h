@@ -47,6 +47,7 @@ private slots:
     void on_start_clicked();
 
     void on_SongSelection_activated(const QString &arg1);
+
     void on_cSongDifficulty_activated(const QString &arg1);
 
 private:
@@ -72,8 +73,10 @@ private:
     SQLiteManager sql;
     void setSongs();
     void onAnyClick();
+    void copySittings();
     QString openFile();
     String buildCommand();
     bool scanFolder();
+    QStringList getArgs();
 };
 #endif // MAINWINDOW_H

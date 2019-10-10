@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     switch(reply){
     case QMessageBox::Yes:
         appName = openFile().toStdString();
+        copySittings();
         if (appName.empty()){
             goto tryAgain;
         }
@@ -34,12 +35,17 @@ MainWindow::MainWindow(QWidget *parent)
             goto tryAgain;
         }
     }
-    pr.setProgram("cmd.exe");
+    qDebug() << QString::fromStdString(appName).split("/").back();
+    pr.setProgram(QString::fromStdString(appName).split("/").back());
     pr.setWorkingDirectory(getDir().path());
+    pr.setArguments(getArgs());
     on_update_clicked();
     }
 }
-
+/**
+ * @brief MainWindow::setSongs
+ * Adds songs into the combobox from DataBase
+ */
 void MainWindow::setSongs(){
     std::vector<QString> songs = sql.getSongs(getDir().path());
     for (auto it : songs){
@@ -49,9 +55,15 @@ void MainWindow::setSongs(){
 }
 
 QDir MainWindow::getDir(){
+    //qDebug() << path.path();
     return path;
 }
 
+/**
+ * @brief MainWindow::openFile
+ * @return Name of the file with full path
+ * Opens diolog with file selection, checks for name "danser"
+ */
 QString MainWindow::openFile(){
     QFileDialog dialog;
     dialog.setFileMode(QFileDialog::ExistingFile);
@@ -67,7 +79,11 @@ QString MainWindow::openFile(){
     }
     return nullptr;
 }
-
+/**
+ * @brief MainWindow::scanFolder
+ * @return true if found
+ * Scans folder for executable file danser
+ */
 bool MainWindow::scanFolder(){
     QDir dir;
     QRegExp exp("danser*.exe");
@@ -82,6 +98,11 @@ bool MainWindow::scanFolder(){
     }
     return false;
 }
+/**
+ * @brief MainWindow::buildCommand
+ * @return command for launch
+ * Builds command for danser to launch
+ */
 String MainWindow::buildCommand(){
     String res;
     res = "\"" + appName + "\"" + " -title=" + "\"" + songName + "\" " + "-difficulty=" + "\"" + difficulty + "\" ";
@@ -111,12 +132,46 @@ String MainWindow::buildCommand(){
     }
 
     return res;
-} 
+}
+
+
+QStringList MainWindow::getArgs(){
+    QStringList args;
+    if (cursors != 0){
+       args.push_front(" -cursors=" + QString(cursors));
+    }
+    if (pitch != 0.0){
+       args.push_front( " -pitch=" + QString::fromStdString(std::to_string(pitch)));
+    }
+    if (speed != 0.0){
+       args.push_front(" -speed=" + QString::fromStdString(std::to_string(speed)));
+    }
+    if (tag != 0){
+       args.push_front( " -tag=" + QString::fromStdString(std::to_string(tag)));
+    }
+    if (sittings != 0){
+        args.push_front( " -sittings=" + QString::fromStdString(std::to_string(sittings)));
+    }
+    if (mover != "flower"){
+        args.push_front(" -mover=" + QString::fromStdString(mover));
+    }
+    if (fps){
+        args.push_front(" -fps");
+    }
+    if (debug){
+        args.push_front(" -debug");
+    }
+
+}
+
 bool MainWindow::getExit(){
     return exPr;
 }
 
-
+/**
+ * @brief MainWindow::onAnyClick
+ * Initializes vars on any click user made.
+ */
 void MainWindow::onAnyClick(){
     this->difficulty = ui->cSongDifficulty->currentText().toStdString();
     this->songName = ui->SongSelection->currentText().toStdString();
@@ -204,15 +259,22 @@ void MainWindow::setExit(bool boolean){
     exPr = boolean;
 }
 
+/**
+ * @brief MainWindow::on_update_clicked
+ * Refreshes list of songs in combobox by updating database and reading it again
+ */
 void MainWindow::on_update_clicked()
 {
     ui->cSongDifficulty->clear();
     ui->SongSelection->clear();
-    String cd = "cd \"" + getDir().path().toStdString() + "\"";
-    String cmd = appName + " -title=\"F\"";
-    pr.execute(QString::fromStdString(cd));
-    qDebug() << pr.isOpen();
-    pr.execute(QString::fromStdString(cmd));
+    QStringList fake;
+    fake = pr.arguments();
+    for (auto it: fake){
+        qDebug() << it;
+    }
+    fake.push_front(" -title=\"F\"");
+    pr.setArguments(fake);
+    pr.start();
     setSongs();
 }
 
@@ -243,4 +305,19 @@ void MainWindow::on_cSongDifficulty_activated(const QString &arg1)
 {
     (void) arg1;
     onAnyClick();
+}
+
+
+void MainWindow::copySittings(){
+    foreach(QString file, getDir().entryList()){
+        qDebug() << getDir().path();
+        if(file.contains("settings")){
+            qDebug() << "To " + QDir::current().path() + " from " + getDir().path();
+            if(!QFile::copy(getDir().path() + "/" + file, QDir::current().path() + "/" + file)){
+
+                QMessageBox f("Error!", "Error coping sittings. Programm can work incorrect. Or it already exist in the folder", QMessageBox::NoIcon, QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton);
+                f.exec();
+            }
+        }
+    }
 }

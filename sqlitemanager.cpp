@@ -46,3 +46,8 @@ std::vector<QString> SQLiteManager::getDifficulty(QString song)
     }
     return res;
 }
+
+SQLiteManager::~SQLiteManager(){
+   sdb.close();
+   sdb.database(nullptr);
+}
